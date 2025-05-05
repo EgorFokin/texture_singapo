@@ -4,7 +4,7 @@ Make sure git-lsf and libgraphviz-dev is installed
 
 ```shell
 cd texture_singapo
-conda create -n texture_singapo
+conda create -n texture_singapo python=3.10
 conda activate texture_singapo
 ./install.sh
 ```
