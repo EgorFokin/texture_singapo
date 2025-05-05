@@ -6,6 +6,7 @@ imageio
 diffusers==0.26.3
 einops
 transformers==4.43.2
+hugginface-hub==0.24.0
 open-clip-torch
 gradio
 pytorch-lightning==1.9.1

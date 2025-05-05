@@ -1,6 +1,6 @@
 ## Setup
 
-Make sure git-lsf is installed
+Make sure git-lsf and libgraphviz-dev is installed
 
 ```shell
 cd texture_singapo

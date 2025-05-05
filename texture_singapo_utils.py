@@ -2,6 +2,9 @@ from openai import OpenAI
 import base64
 from dotenv import load_dotenv
 from rembg import remove
+import pyrender
+import trimesh
+from PIL import Image
 load_dotenv()
 
 client = OpenAI()
@@ -61,4 +64,42 @@ def get_object_mask(image_path,output_path):
             o.write(output)
         
 
+def render_mesh(mesh, resolution=512,output_path=None):
+    """
+    Render a mesh to a 2D image.
+    
+    Args:
+        mesh (trimesh.Trimesh): The mesh to render.
+        resolution (int): The resolution of the output image.
+    
+    Returns:
+        np.ndarray: The rendered image.
+    """
+    # Create a scene
+    scene = pyrender.Scene()
+    
+    # Add the mesh to the scene
+    mesh_node = pyrender.Mesh.from_trimesh(mesh)
+    scene.add(mesh_node)
+    
+    # Set up the camera
+    camera = pyrender.PerspectiveCamera(yfov=np.pi / 3.0)
+    camera_pose = np.eye(4)
+    camera_pose[2, 3] = 2.0  # Move the camera back
+    scene.add(camera, pose=camera_pose)
+    
+    # Set up the light
+    light = pyrender.DirectionalLight(color=np.ones(3), intensity=5.0)
+    scene.add(light, pose=camera_pose)
+    
+    # Render the scene
+    r = pyrender.OffscreenRenderer(resolution, resolution)
+    color, _ = r.render(scene)
+    
+    # Save the rendered image
+    if output_path:
+        image = Image.fromarray(color)
+        image.save(output_path)
+    
+    return color
 
