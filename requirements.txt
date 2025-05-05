@@ -19,6 +19,7 @@ iopath==0.1.10
 mediapipe
 xatlas
 rembg
+onnxruntime
 lightning==2.3.3
 numpy==1.26.4
 wandb
