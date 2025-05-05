@@ -1,0 +1,415 @@
+{
+    "meta": {
+        "obj_cat": "armoire",
+        "depth": 1,
+        "n_arti_parts": 4,
+        "n_revolute": 4,
+        "n_continuous": 0,
+        "n_prismatic": 0,
+        "n_screw": 0,
+        "n_diff_parts": 9,
+        "tree_hash": "8eeca00e9c65c3f57b5ad2ee91f01cf2"
+    },
+    "diffuse_tree": [
+        {
+            "id": 0,
+            "parent": 8,
+            "name": "door",
+            "children": [
+                4
+            ],
+            "joint": {
+                "type": "revolute",
+                "range": [
+                    0.0,
+                    90.0
+                ],
+                "axis": {
+                    "origin": [
+                        -0.649665,
+                        0.0,
+                        0.183504
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_1.obj"
+            ],
+            "aabb": {
+                "center": [
+                    -0.487647715,
+                    0.0,
+                    0.18918569000000002
+                ],
+                "size": [
+                    0.32403547,
+                    1.46964092,
+                    0.011362779999999989
+                ]
+            },
+            "plys": [
+                "plys/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_1.ply"
+            ]
+        },
+        {
+            "id": 1,
+            "parent": 8,
+            "name": "door",
+            "children": [
+                5
+            ],
+            "joint": {
+                "type": "revolute",
+                "range": [
+                    0.0,
+                    90.0
+                ],
+                "axis": {
+                    "origin": [
+                        -0.000957,
+                        0.0,
+                        0.183504
+                    ],
+                    "direction": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_2.obj"
+            ],
+            "aabb": {
+                "center": [
+                    -0.162974495,
+                    1.5000000019860238e-08,
+                    0.18918571
+                ],
+                "size": [
+                    0.32403532999999995,
+                    1.46964089,
+                    0.01136261999999999
+                ]
+            },
+            "plys": [
+                "plys/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_2.ply"
+            ]
+        },
+        {
+            "id": 2,
+            "parent": 8,
+            "name": "door",
+            "children": [
+                6
+            ],
+            "joint": {
+                "type": "revolute",
+                "range": [
+                    0.0,
+                    90.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.000957,
+                        0.0,
+                        0.183504
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_3.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.16297454,
+                    2.500000001459668e-08,
+                    0.18918569000000002
+                ],
+                "size": [
+                    0.32403548000000004,
+                    1.46964087,
+                    0.011362779999999989
+                ]
+            },
+            "plys": [
+                "plys/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_3.ply"
+            ]
+        },
+        {
+            "id": 3,
+            "parent": 8,
+            "name": "door",
+            "children": [
+                7
+            ],
+            "joint": {
+                "type": "revolute",
+                "range": [
+                    0.0,
+                    90.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.649665,
+                        0.0,
+                        0.183504
+                    ],
+                    "direction": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_4.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.48764772,
+                    3.9999999978945766e-08,
+                    0.18918571
+                ],
+                "size": [
+                    0.32403531999999996,
+                    1.46964084,
+                    0.01136261999999999
+                ]
+            },
+            "plys": [
+                "plys/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_4.ply"
+            ]
+        },
+        {
+            "id": 4,
+            "parent": 0,
+            "name": "handle",
+            "children": [],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_5.obj"
+            ],
+            "aabb": {
+                "center": [
+                    -0.3464913,
+                    -0.14519708,
+                    0.19081874999999998
+                ],
+                "size": [
+                    0.007429539999999957,
+                    0.13767385999999998,
+                    0.008099319999999993
+                ]
+            },
+            "plys": [
+                "plys/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_5.ply"
+            ]
+        },
+        {
+            "id": 5,
+            "parent": 1,
+            "name": "handle",
+            "children": [],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_6.obj"
+            ],
+            "aabb": {
+                "center": [
+                    -0.304130925,
+                    -0.14519708,
+                    0.19081874999999998
+                ],
+                "size": [
+                    0.0074295300000000175,
+                    0.13767385999999998,
+                    0.008099319999999993
+                ]
+            },
+            "plys": [
+                "plys/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_6.ply"
+            ]
+        },
+        {
+            "id": 6,
+            "parent": 2,
+            "name": "handle",
+            "children": [],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_7.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.304130925,
+                    -0.14519706500000001,
+                    0.19081874999999998
+                ],
+                "size": [
+                    0.0074295699999999965,
+                    0.13767383,
+                    0.008099319999999993
+                ]
+            },
+            "plys": [
+                "plys/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_7.ply"
+            ]
+        },
+        {
+            "id": 7,
+            "parent": 3,
+            "name": "handle",
+            "children": [],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_8.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.34649132000000005,
+                    -0.145197175,
+                    0.19081874999999998
+                ],
+                "size": [
+                    0.007429579999999991,
+                    0.13767374999999998,
+                    0.008099319999999993
+                ]
+            },
+            "plys": [
+                "plys/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_8.ply"
+            ]
+        },
+        {
+            "id": 8,
+            "parent": -1,
+            "name": "base",
+            "children": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_9.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.0,
+                    0.0,
+                    -0.00574144
+                ],
+                "size": [
+                    1.2993309,
+                    1.46964092,
+                    0.37825394
+                ]
+            },
+            "plys": [
+                "plys/28098e6540f2f2fc07f7fc6a00edd6ce371a2618_part_9.ply"
+            ]
+        }
+    ]
+}

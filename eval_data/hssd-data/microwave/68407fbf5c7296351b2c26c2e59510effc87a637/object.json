@@ -1,0 +1,105 @@
+{
+    "meta": {
+        "obj_cat": "microwave",
+        "depth": 0,
+        "n_arti_parts": 1,
+        "n_revolute": 1,
+        "n_continuous": 0,
+        "n_prismatic": 0,
+        "n_screw": 0,
+        "n_diff_parts": 2,
+        "tree_hash": "8a8a4905c9b0f8fd7847dc408134a288"
+    },
+    "diffuse_tree": [
+        {
+            "id": 0,
+            "parent": 1,
+            "name": "door",
+            "children": [],
+            "joint": {
+                "type": "revolute",
+                "range": [
+                    0.0,
+                    90.0
+                ],
+                "axis": {
+                    "origin": [
+                        -0.744155,
+                        0.018639,
+                        0.481327
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/68407fbf5c7296351b2c26c2e59510effc87a637_part_1.obj"
+            ],
+            "aabb": {
+                "center": [
+                    -0.14704462999999998,
+                    0.018638810000000006,
+                    0.49825711
+                ],
+                "size": [
+                    1.1942201399999999,
+                    0.81317052,
+                    0.03386100000000003
+                ]
+            },
+            "plys": [
+                "plys/68407fbf5c7296351b2c26c2e59510effc87a637_part_1.ply"
+            ]
+        },
+        {
+            "id": 1,
+            "parent": -1,
+            "name": "base",
+            "children": [
+                0
+            ],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/68407fbf5c7296351b2c26c2e59510effc87a637_part_3.obj",
+                "objs/68407fbf5c7296351b2c26c2e59510effc87a637_part_4.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    1.4883094,
+                    0.85044814,
+                    1.03037522
+                ]
+            },
+            "plys": [
+                "plys/68407fbf5c7296351b2c26c2e59510effc87a637_part_3.ply",
+                "plys/68407fbf5c7296351b2c26c2e59510effc87a637_part_4.ply"
+            ]
+        }
+    ]
+}

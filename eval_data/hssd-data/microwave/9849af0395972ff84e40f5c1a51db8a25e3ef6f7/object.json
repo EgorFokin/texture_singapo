@@ -1,0 +1,421 @@
+{
+    "meta": {
+        "obj_cat": "microwave",
+        "depth": 1,
+        "n_arti_parts": 4,
+        "n_revolute": 4,
+        "n_continuous": 0,
+        "n_prismatic": 0,
+        "n_screw": 0,
+        "n_diff_parts": 9,
+        "tree_hash": "8eeca00e9c65c3f57b5ad2ee91f01cf2"
+    },
+    "diffuse_tree": [
+        {
+            "id": 0,
+            "parent": 8,
+            "name": "door",
+            "children": [
+                4
+            ],
+            "joint": {
+                "type": "revolute",
+                "range": [
+                    0.0,
+                    90.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.635218,
+                        0.535044,
+                        -0.084718
+                    ],
+                    "direction": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_1.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.37866784000000003,
+                    0.535043575,
+                    -0.07049371
+                ],
+                "size": [
+                    0.51310124,
+                    0.29878132999999996,
+                    0.028448599999999998
+                ]
+            },
+            "plys": [
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_1.ply"
+            ]
+        },
+        {
+            "id": 1,
+            "parent": 8,
+            "name": "door",
+            "children": [
+                5
+            ],
+            "joint": {
+                "type": "revolute",
+                "range": [
+                    0.0,
+                    90.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.632846,
+                        -0.30626,
+                        0.227178
+                    ],
+                    "direction": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_2.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.42856682,
+                    -0.306259665,
+                    0.23713496
+                ],
+                "size": [
+                    0.40855846000000007,
+                    0.6749574700000001,
+                    0.01991422000000001
+                ]
+            },
+            "plys": [
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_2.ply"
+            ]
+        },
+        {
+            "id": 2,
+            "parent": 8,
+            "name": "door",
+            "children": [
+                6
+            ],
+            "joint": {
+                "type": "revolute",
+                "range": [
+                    0.0,
+                    90.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.213628,
+                        -0.306669,
+                        0.227096
+                    ],
+                    "direction": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_3.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.0018396499999999982,
+                    -0.30666862500000003,
+                    0.236905665
+                ],
+                "size": [
+                    0.42357684,
+                    0.67341739,
+                    0.019618410000000003
+                ]
+            },
+            "plys": [
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_3.ply"
+            ]
+        },
+        {
+            "id": 3,
+            "parent": 8,
+            "name": "door",
+            "children": [
+                7
+            ],
+            "joint": {
+                "type": "revolute",
+                "range": [
+                    0.0,
+                    90.0
+                ],
+                "axis": {
+                    "origin": [
+                        -0.635732,
+                        -0.306669,
+                        0.227096
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_4.obj"
+            ],
+            "aabb": {
+                "center": [
+                    -0.42394378,
+                    -0.30666862500000003,
+                    0.236905665
+                ],
+                "size": [
+                    0.42357683999999995,
+                    0.67341739,
+                    0.019618410000000003
+                ]
+            },
+            "plys": [
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_4.ply"
+            ]
+        },
+        {
+            "id": 4,
+            "parent": 0,
+            "name": "handle",
+            "children": [],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_5.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.155518055,
+                    0.532117955,
+                    -0.050299474999999996
+                ],
+                "size": [
+                    0.013694349999999994,
+                    0.15148082999999996,
+                    0.05823781
+                ]
+            },
+            "plys": [
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_5.ply"
+            ]
+        },
+        {
+            "id": 5,
+            "parent": 1,
+            "name": "handle",
+            "children": [],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_6.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.26536855000000004,
+                    -0.29460027499999997,
+                    0.255021135
+                ],
+                "size": [
+                    0.013694339999999972,
+                    0.15148078999999998,
+                    0.058237789999999984
+                ]
+            },
+            "plys": [
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_6.ply"
+            ]
+        },
+        {
+            "id": 6,
+            "parent": 2,
+            "name": "handle",
+            "children": [],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_7.obj"
+            ],
+            "aabb": {
+                "center": [
+                    -0.18493514,
+                    -0.294600335,
+                    0.255021065
+                ],
+                "size": [
+                    0.01369434,
+                    0.15148082999999998,
+                    0.05823781000000003
+                ]
+            },
+            "plys": [
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_7.ply"
+            ]
+        },
+        {
+            "id": 7,
+            "parent": 3,
+            "name": "handle",
+            "children": [],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_8.obj"
+            ],
+            "aabb": {
+                "center": [
+                    -0.23918383999999998,
+                    -0.294600335,
+                    0.255021065
+                ],
+                "size": [
+                    0.013694359999999989,
+                    0.15148082999999998,
+                    0.05823781000000003
+                ]
+            },
+            "plys": [
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_8.ply"
+            ]
+        },
+        {
+            "id": 8,
+            "parent": -1,
+            "name": "base",
+            "children": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_13.obj",
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_14.obj",
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_15.obj",
+                "objs/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_16.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.0,
+                    0.0,
+                    -0.013167189999999995
+                ],
+                "size": [
+                    1.30066974,
+                    1.40901242,
+                    0.54194568
+                ]
+            },
+            "plys": [
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_13.ply",
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_14.ply",
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_15.ply",
+                "plys/9849af0395972ff84e40f5c1a51db8a25e3ef6f7_part_16.ply"
+            ]
+        }
+    ]
+}

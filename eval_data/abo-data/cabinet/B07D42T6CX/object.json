@@ -1,0 +1,235 @@
+{
+    "meta": {
+        "obj_cat": "cabinet",
+        "depth": 0,
+        "n_arti_parts": 4,
+        "n_revolute": 0,
+        "n_continuous": 0,
+        "n_prismatic": 0,
+        "n_screw": 0,
+        "n_diff_parts": 5,
+        "tree_hash": "91f97963e40d14625c286e9cd0db274b"
+    },
+    "diffuse_tree": [
+        {
+            "id": 0,
+            "parent": 4,
+            "name": "drawer",
+            "children": [],
+            "joint": {
+                "type": "prismatic",
+                "range": [
+                    -0.001278360866342556,
+                    0.6416295190755192
+                ],
+                "axis": {
+                    "origin": [
+                        0.001121,
+                        0.464373,
+                        0.368848
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        1.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/B07D42T6CX_part_2.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.001121414999999959,
+                    0.464372785,
+                    0.012372809999999956
+                ],
+                "size": [
+                    1.09634447,
+                    0.24691809000000003,
+                    0.8805357
+                ]
+            },
+            "plys": [
+                "plys/B07D42T6CX_part_2.ply"
+            ]
+        },
+        {
+            "id": 1,
+            "parent": 4,
+            "name": "drawer",
+            "children": [],
+            "joint": {
+                "type": "prismatic",
+                "range": [
+                    -0.001278360866342556,
+                    0.6416295190755192
+                ],
+                "axis": {
+                    "origin": [
+                        0.001121,
+                        0.191463,
+                        0.368848
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        1.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/B07D42T6CX_part_3.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.001121414999999959,
+                    0.19146259000000002,
+                    0.012372809999999956
+                ],
+                "size": [
+                    1.09634447,
+                    0.23797942,
+                    0.8805357
+                ]
+            },
+            "plys": [
+                "plys/B07D42T6CX_part_3.ply"
+            ]
+        },
+        {
+            "id": 2,
+            "parent": 4,
+            "name": "drawer",
+            "children": [],
+            "joint": {
+                "type": "prismatic",
+                "range": [
+                    -0.001278360866342556,
+                    0.6416295190755192
+                ],
+                "axis": {
+                    "origin": [
+                        0.001121,
+                        -0.051239,
+                        0.368848
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        1.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/B07D42T6CX_part_4.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.001121414999999959,
+                    -0.05123875,
+                    0.012372809999999956
+                ],
+                "size": [
+                    1.09634447,
+                    0.2450738,
+                    0.8805357
+                ]
+            },
+            "plys": [
+                "plys/B07D42T6CX_part_4.ply"
+            ]
+        },
+        {
+            "id": 3,
+            "parent": 4,
+            "name": "drawer",
+            "children": [],
+            "joint": {
+                "type": "prismatic",
+                "range": [
+                    -0.001278360866342556,
+                    0.6416295190755192
+                ],
+                "axis": {
+                    "origin": [
+                        0.001121,
+                        -0.319398,
+                        0.368848
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        1.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/B07D42T6CX_part_5.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.001121414999999959,
+                    -0.319397975,
+                    0.012372809999999956
+                ],
+                "size": [
+                    1.09634447,
+                    0.24098816999999997,
+                    0.8805357
+                ]
+            },
+            "plys": [
+                "plys/B07D42T6CX_part_5.ply"
+            ]
+        },
+        {
+            "id": 4,
+            "parent": -1,
+            "name": "base",
+            "children": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "joint": {
+                "type": "fixed",
+                "range": [
+                    0,
+                    0.0
+                ],
+                "axis": {
+                    "origin": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "objs": [
+                "objs/B07D42T6CX_part_1.obj"
+            ],
+            "aabb": {
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    1.20354028,
+                    1.26264686,
+                    0.978373
+                ]
+            },
+            "plys": [
+                "plys/B07D42T6CX_part_1.ply"
+            ]
+        }
+    ]
+}

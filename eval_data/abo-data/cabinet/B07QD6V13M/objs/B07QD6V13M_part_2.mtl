@@ -1,0 +1,8 @@
+# https://github.com/mikedh/trimesh
+
+newmtl texture_ef650cfb-2b6e-468f-91af-09fd15c2b778
+Ka 0.40000000 0.40000000 0.40000000
+Kd 1.00000000 1.00000000 1.00000000
+Ks 0.40000000 0.40000000 0.40000000
+Ns 1.00000000
+map_Kd ../textures/texture_ef650cfb-2b6e-468f-91af-09fd15c2b778.png
