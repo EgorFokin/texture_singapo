@@ -25,6 +25,8 @@ class DataItem:
             return
 
         self.img_path = os.path.join(self.output_path,"image.png")
+
+        os.makedirs(self.output_path, exist_ok=True)
         
         shutil.copy(os.path.join(path,"imgs","00.png"), self.img_path)
 
