@@ -5,6 +5,7 @@ from rembg import remove
 import pyrender
 import trimesh
 from PIL import Image
+import numpy as np
 load_dotenv()
 
 client = OpenAI()
@@ -94,12 +95,35 @@ def render_mesh(mesh, resolution=512,output_path=None):
     
     # Render the scene
     r = pyrender.OffscreenRenderer(resolution, resolution)
-    color, _ = r.render(scene)
+    color, depth = r.render(scene)
+
+    mask = (depth > 0).astype(np.uint8) * 255  # Convert to 0 or 255
     
     # Save the rendered image
     if output_path:
         image = Image.fromarray(color)
+        mask = Image.fromarray(mask)
         image.save(output_path)
+        mask.save(output_path.replace('.png', '_mask.png'))
     
     return color
 
+def normalize_mesh(mesh):
+    """
+    Normalize the mesh by:
+    1. Removing degenerate faces
+    2. Merging and welding vertices that are very close
+    3. Ensuring consistent winding of faces
+    Args:
+        mesh (trimesh.Trimesh): The mesh to normalize.
+    """
+    
+    mesh.update_faces(mesh.unique_faces())
+    mesh.update_faces(mesh.nondegenerate_faces(height=1e-5))
+
+    # 2. Merge and weld vertices that are very close
+    mesh.merge_vertices()  # merges vertices within tolerance
+    mesh.remove_unreferenced_vertices()
+
+    # 3. Ensure consistent winding of faces
+    mesh.fix_normals()

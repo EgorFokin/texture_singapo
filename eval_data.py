@@ -13,6 +13,9 @@ class DataItem:
         self.output_path = os.path.join(output_path,self.id)
         self.use_cached = use_cached
         self.singapo_obj_path = None
+        self.easitext_obj_path = None
+        self.cosine_similarity = None
+        self.cosine_similarity_no_easitex = None
 
         
 
@@ -92,6 +95,34 @@ class DataItem:
             path (str): Path to the Singapo generated object.
         """
         self.singapo_obj_path = path
+
+    def set_easitext_obj_path(self, path):
+        """
+        Set the path to the Easi-Tex generated object.
+
+        Args:
+            path (str): Path to the Easi-Tex generated object.
+        """
+        self.easitext_obj_path = path
+    
+    def set_cosine_similarity(self, similarity):
+        """
+        Set the cosine similarity between the generated object and the original object.
+
+        Args:
+            similarity (float): Cosine similarity value.
+        """
+        self.cosine_similarity = similarity
+
+    def set_cosine_similarity_no_easitex(self, similarity):
+        """
+        Set the cosine similarity between the generated object and the original object without Easi-Tex.
+
+        Args:
+            similarity (float): Cosine similarity value.
+        """
+        self.cosine_similarity_no_easitex = similarity
+    
 
 
 
