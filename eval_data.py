@@ -13,7 +13,7 @@ class DataItem:
         self.output_path = os.path.join(output_path,self.id)
         self.use_cached = use_cached
         self.singapo_obj_path = None
-        self.easitext_obj_path = None
+        self.easitex_obj_path = None
         self.cosine_similarity = None
         self.cosine_similarity_no_easitex = None
 
@@ -96,14 +96,14 @@ class DataItem:
         """
         self.singapo_obj_path = path
 
-    def set_easitext_obj_path(self, path):
+    def set_easitex_obj_path(self, path):
         """
         Set the path to the Easi-Tex generated object.
 
         Args:
             path (str): Path to the Easi-Tex generated object.
         """
-        self.easitext_obj_path = path
+        self.easitex_obj_path = path
     
     def set_cosine_similarity(self, similarity):
         """

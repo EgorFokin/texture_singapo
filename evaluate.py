@@ -5,11 +5,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "singapo"))
 from generate import generate
 from eval_data import EvaluationData
 from utils.misc import load_config
-from texture_singapo_utils import normalize_mesh
+from texture_singapo_utils import normalize_mesh,render_mesh
 
 import argparse
 from tqdm import tqdm
 import trimesh
+import torch
+from torchvision import transforms
+from PIL import Image
+
 
 
 
@@ -128,7 +132,9 @@ def texture_objects(data,args):
 
     for item in tqdm(data.get_data_items()):
 
-        item.set_easitex_obj_path(os.path.join(item.output_path,"easitex","canny",f"0-{item.id}","42-ip1.0-cn1.0-dist0.8-gs10.0-p36-h20-us0.4-vt0.1","update","19_post.obj"))
+        item.set_easitex_obj_path(os.path.join(item.output_path,"easitex","canny",f"0-{item.id}","42-ip1.0-cn1.0-dist0.8-gs10.0-p36-h20-us0.4-vt0.1","update","mesh","19_post.obj"))
+
+
         if args.use_cached and os.path.exists(item.easitex_obj_path):
             continue
 
@@ -184,12 +190,12 @@ def evaluate(data,args):
 
         if not (args.use_cached and os.path.exists(synthesized_image_path)):
             #render the synthesized mesh
-            mesh = trimesh.load_mesh(args.easitex_obj_path)
+            mesh = trimesh.load_mesh(item.easitex_obj_path)
 
             render_mesh(mesh, resolution=512,output_path=synthesized_image_path)
 
         synthesized_image = Image.open(synthesized_image_path).convert("RGB")
-        synthesized_mask = Image.open(args.mask_path).convert("L")
+        synthesized_mask = Image.open(synthesized_mask_path).convert("L")
 
         ground_truth_image = Image.open(item.img_path).convert("RGB")
         ground_truth_mask = Image.open(item.mask_path).convert("L")
@@ -222,7 +228,7 @@ def evaluate(data,args):
             render_mesh(mesh, resolution=512,output_path=synthesized_image_path)
 
             synthesized_image = Image.open(synthesized_image_path).convert("RGB")
-            synthesized_mask = Image.open(args.mask_path).convert("L")
+            synthesized_mask = Image.open(synthesized_mask_path).convert("L")
 
             synthesized_image_tensor = transform(synthesized_image)
             synthesized_mask_tensor = transform_mask(synthesized_mask)
