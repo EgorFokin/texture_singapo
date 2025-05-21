@@ -3,7 +3,7 @@ from pathlib import Path
 import trimesh
 from tqdm import tqdm
 import shutil
-from texture_singapo_utils import get_image_description, get_object_mask
+from eval_utils.utils import get_image_description, get_object_mask
 
 class DataItem:
     def __init__(self, path,output_path,use_cached=True):
@@ -16,6 +16,9 @@ class DataItem:
         self.easitex_obj_path = None
         self.cosine_similarity = None
         self.cosine_similarity_no_easitex = None
+        self.naive_cosine_similarity = None
+        self.naive_texturing_path = os.path.join(self.output_path,"naive_texturing","object.obj")
+        os.makedirs(os.path.join(self.output_path,"naive_texturing"), exist_ok=True)
 
         
 
@@ -85,7 +88,7 @@ class DataItem:
             return None
         
         combined_mesh = trimesh.util.concatenate(parts)
-        combined_mesh.export(obj_path, file_type='obj', include_texture=False)
+        combined_mesh.export(obj_path, file_type='obj', include_texture=True)
             
         return obj_path
     
@@ -124,6 +127,15 @@ class DataItem:
             similarity (float): Cosine similarity value.
         """
         self.cosine_similarity_no_easitex = similarity
+
+    def set_naive_cosine_similarity(self, similarity):
+        """
+        Set the naive cosine similarity between the generated object and the original object.
+
+        Args:
+            similarity (float): Cosine similarity value.
+        """
+        self.naive_cosine_similarity = similarity
     
 
 
