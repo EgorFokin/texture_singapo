@@ -5,8 +5,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "singapo"))
 from generate import generate
 from eval_data import EvaluationData
 from utils.misc import load_config
-from eval_utils.utils import normalize_mesh,render_mesh, project_texture
+from eval_utils.utils import normalize_mesh,render_mesh, project_texture,transfer_visuals
 from eval_utils.render_compare import compare_to_ground_truth
+from eval_utils.articulate import get_articulated
 
 import argparse
 from tqdm import tqdm
@@ -14,8 +15,6 @@ import trimesh
 import torch
 from PIL import Image
 import numpy as np
-
-dinov2_vitb14_reg = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14_reg', pretrained=True).cuda()
 
 
 class Args:
@@ -69,13 +68,18 @@ def synthesize_objects(data, args):
 
         generate(s_args)
 
-        mesh = trimesh.load(os.path.join(out_dir, "object.ply"), force='mesh')
-        if not isinstance(mesh, trimesh.Trimesh):
-            print(f"{out_dir}/object.ply failed to load")
-            continue
+        scene = trimesh.Scene()
 
-        normalize_mesh(mesh)
-        mesh.export(os.path.join(out_dir, "object.obj"), file_type='obj', include_texture=False)
+        for file in os.listdir(os.path.join(out_dir, "plys")):
+            if file.endswith(".ply"):
+                mesh = trimesh.load(os.path.join(out_dir,"plys", file), force='mesh')
+                
+                normalize_mesh(mesh)
+
+                scene.add_geometry(mesh,node_name=file.split('.')[0])
+        
+        print(os.path.join(out_dir, "object.obj"))
+        scene.export(os.path.join(out_dir, "object.obj"), file_type='obj', include_texture=False)
         item.set_singapo_obj_path(os.path.join(out_dir, "object.obj"))
 
 
@@ -155,20 +159,49 @@ def evaluate(data, args):
     print("Evaluating...")
 
     for item in tqdm(data.get_data_items()):
-        sim = compare_to_ground_truth(item.easitex_obj_path, item.obj_path, item.output_path, args)
+        gt_mesh = trimesh.load(item.obj_path)
+        easitex_mesh = trimesh.load(item.easitex_obj_path)
+        base_mesh = trimesh.load(item.singapo_obj_path)
+
+        if args.articulated:
+            base_mesh = get_articulated(os.path.dirname(item.singapo_obj_path))
+            
+            gt_articulated = get_articulated(item.path)
+            gt_mesh = transfer_visuals(gt_mesh,gt_articulated)
+            gt_mesh = gt_articulated
+
+        
+        #texture from easi-tex
+        base_mesh = transfer_visuals(easitex_mesh,base_mesh)
+
+        base_mesh.export("test/test.obj")
+
+        
+        sim = compare_to_ground_truth(base_mesh, gt_mesh, item.output_path, args)
         item.set_cosine_similarity(sim)
 
         if args.add_no_texture:
             out_no_tex = os.path.join(item.output_path, "no_easitex")
             os.makedirs(out_no_tex, exist_ok=True)
-            sim = compare_to_ground_truth(item.singapo_obj_path, item.obj_path, out_no_tex, args)
+
+            #no texture
+            base_mesh.visuals = trimesh.visual.ColorVisuals(mesh=base_mesh)
+
+            sim = compare_to_ground_truth(base_mesh, gt_mesh, out_no_tex, args)
             item.set_cosine_similarity_no_easitex(sim)
 
         if args.add_naive_texturing:
             out_naive = os.path.join(item.output_path, "naive_texturing")
             os.makedirs(out_naive, exist_ok=True)
-            sim = compare_to_ground_truth(item.naive_texturing_path, item.obj_path, out_naive, args)
+
+            #naive texturing
+            naive_tex_mesh = trimesh.load(item.naive_texturing_path)
+            base_mesh = transfer_visuals(naive_tex_mesh,base_mesh)
+
+            sim = compare_to_ground_truth(base_mesh, gt_mesh, out_naive, args)
             item.set_naive_cosine_similarity(sim)
+        exit()
+        
 
 
 def display_results(data, args):
@@ -259,6 +292,7 @@ if __name__ == "__main__":
     parser.add_argument("--add_naive_texturing", action="store_true", help="additionally evaluate the objects with naive texturing instead of Easi-Tex")
     parser.add_argument("--from_meshes", type=str, default=None, help="path to the meshes to be evaluated")
     parser.add_argument("--additional_rotations", action="store_true", help="evaluate the objects with additional rotations")
+    parser.add_argument("--articulated", action="store_true", help="evaluate objects with articulation")
 
     args = parser.parse_args()
 

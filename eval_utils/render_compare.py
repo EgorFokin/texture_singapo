@@ -11,6 +11,8 @@ from eval_utils.utils import normalize_mesh,render_mesh, project_texture
 dinov2_vitb14_reg = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14_reg', pretrained=True).cuda()
 
 
+
+
 def _cosine_sim(a, b):
     """
     Compute the cosine similarity between two tensors.
@@ -25,18 +27,19 @@ def _cosine_sim(a, b):
     return torch.sum(a * b, dim=-1)
 
 
-def compare_to_ground_truth(obj_path, gt_path, out_dir, args):
+def compare_to_ground_truth(syn_mesh, gt_mesh, out_dir, args):
     """
     Compare the synthesized object to the ground truth image using DINOv2.
     Args:
-        obj_path (str): Path to the synthesized object.
-        gt_path (str): Path to the ground truth object.
+        syn_mesh (trimesh.Trimesh): Synthesized mesh
+        gt_mesh (trimesh.Trimesh): Ground truth mesh
         out_dir (str): Directory, where to save the output image.
         args (argparse.Namespace): The arguments passed to the script.
     Returns:
         float: The cosine similarity between the synthesized object and the ground truth image.
             If args.additional_rotations is True, the average similarity over all rotations is returned.
     """
+    syn_mesh = syn_mesh.copy()
 
 
     tf = transforms.Compose([
@@ -57,7 +60,6 @@ def compare_to_ground_truth(obj_path, gt_path, out_dir, args):
         gt_img = os.path.join(out_dir, "ground_truth", f"gt_{i}.png")
         gt_mask = os.path.join(out_dir, "ground_truth", f"gt_{i}_mask.png")
 
-        gt_mesh = trimesh.load_mesh(gt_path)
         gt_mesh.apply_transform(trimesh.transformations.rotation_matrix(rot, [0, 1, 0]))
         render_mesh(gt_mesh, resolution=512, output_path=gt_img)
 
@@ -65,10 +67,12 @@ def compare_to_ground_truth(obj_path, gt_path, out_dir, args):
         gt_mask_tensor = tf_mask(Image.open(gt_mask).convert("L"))
         gt_tensor = gt_img_tensor * gt_mask_tensor
 
+
         syn_img = os.path.join(out_dir, f"syn_{i}.png")
         syn_mask = os.path.join(out_dir, f"syn_{i}_mask.png")
 
-        syn_mesh = trimesh.load_mesh(obj_path)
+        print(syn_img)
+
         syn_mesh.apply_transform(trimesh.transformations.rotation_matrix(rot, [0, 1, 0]))
         render_mesh(syn_mesh, resolution=512, output_path=syn_img, is_instantmesh=bool(args.from_meshes))
 

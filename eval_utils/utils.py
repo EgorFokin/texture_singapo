@@ -5,7 +5,10 @@ from rembg import remove
 import pyrender
 import trimesh
 from PIL import Image
+from scipy.spatial import cKDTree
 import numpy as np
+import xatlas
+import os
 load_dotenv()
 
 client = OpenAI()
@@ -225,3 +228,29 @@ def project_texture(mesh, image_path, mask_path, output_path):
     mesh.visual = visual
     
     mesh.export(output_path)
+
+def transfer_visuals(source_mesh, target_mesh):
+    """
+    Transfer the visuals from the source mesh to the target mesh.
+    
+    Args:
+        source_mesh (trimesh.Trimesh): The source mesh.
+        target_mesh (trimesh.Trimesh): The target mesh.
+    Returns:
+        trimesh.Trimesh: The target mesh with transferred visuals.
+    """
+    
+
+    vmapping, indices, uvs = xatlas.parametrize(target_mesh.vertices, target_mesh.faces)
+
+    xatlas.export("tmp.obj", target_mesh.vertices[vmapping], indices, uvs)
+
+    target_mesh = trimesh.load("tmp.obj", force="mesh")
+
+    os.remove("tmp.obj")
+
+    target_mesh.visual = source_mesh.visual.copy()
+
+    source_mesh.export("test/test1.obj")
+
+    return target_mesh
