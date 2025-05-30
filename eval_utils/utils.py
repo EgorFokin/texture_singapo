@@ -66,9 +66,31 @@ def get_object_mask(image_path,output_path):
             input = i.read()
             output = remove(input,only_mask=True)
             o.write(output)
+
+def make_double_sided(mesh):
+    # Flip faces winding
+    flipped_faces = mesh.faces[:, ::-1]
+    
+    # Combine vertices
+    vertices = np.vstack((mesh.vertices, mesh.vertices))
+    
+    # Combine faces: original + flipped (with offset)
+    faces = np.vstack((mesh.faces, flipped_faces + len(mesh.vertices)))
+    
+    if not hasattr(mesh.visual,"material"):
+        return trimesh.Trimesh(vertices=vertices, faces=faces)
+
+    uv = np.vstack((mesh.visual.uv, mesh.visual.uv))
+    
+    # Build visual with preserved texture image and UVs
+    visual = mesh.visual.copy()
+    visual.uv = uv
+    
+    # Return new double-sided mesh
+    return trimesh.Trimesh(vertices=vertices, faces=faces, visual=visual)
         
 
-def render_mesh(mesh, resolution=512, output_path=None, is_instantmesh=False):
+def render_mesh(mesh, resolution=512, output_path=None, is_instantmesh=False, as_scene=False):
     """
     Render a mesh to a 2D image, centering and scaling it so the bounding box is [-1, 1].
 
@@ -83,35 +105,20 @@ def render_mesh(mesh, resolution=512, output_path=None, is_instantmesh=False):
 
     render_mesh = mesh.copy()
 
-    # Normalize mesh to fit bounding box [-1, 1]
-    bbox_min = render_mesh.bounds[0]
-    bbox_max = render_mesh.bounds[1]
-    center = (bbox_min + bbox_max) / 2
-    scale = 2.0 / np.max(bbox_max - bbox_min)  # scale to fit in [-1, 1]
-    
-    render_mesh.apply_translation(-center)
-    render_mesh.apply_scale(scale)
+    intensity = 5
+
+    if as_scene:
+        
+        # Normalize mesh to fit bounding box [-1, 1]
+        bbox_min = render_mesh.bounds[0]
+        bbox_max = render_mesh.bounds[1]
+        center = (bbox_min + bbox_max) / 2
+        scale = 2.0 / np.max(bbox_max - bbox_min)  # scale to fit in [-1, 1]
+        
+        render_mesh.apply_translation(-center)
+        render_mesh.apply_scale(scale)
 
 
-    if is_instantmesh:
-        # Flip the mesh, to better represent the original image
-        render_mesh.apply_transform([
-            [-1, 0, 0, 0],
-            [ 0, 1, 0, 0],
-            [ 0, 0, 1, 0],
-            [ 0, 0, 0, 1]
-        ])
-        render_mesh.apply_transform(trimesh.transformations.rotation_matrix(
-            angle= np.pi,
-            direction=[0, 1, 0]
-        ))
-        render_mesh.apply_transform(trimesh.transformations.rotation_matrix(
-            angle= np.pi / 10,
-            direction=[1, 0, 0]
-        ))
-    
-    else:
-        # Slightly rotate the mesh for better visualization
         render_mesh.apply_transform(trimesh.transformations.rotation_matrix(
             angle= -np.pi / 6,
             direction=[0, 1, 0]
@@ -120,24 +127,70 @@ def render_mesh(mesh, resolution=512, output_path=None, is_instantmesh=False):
             angle= np.pi / 10,
             direction=[1, 0, 0]
         ))
-    
-    # Create a scene
-    scene = pyrender.Scene()
-
-    intensity = 20
-    
-    if not hasattr(render_mesh.visual, 'material'):
-        # Create a grey material if no texture exists
-        grey_material = pyrender.MetallicRoughnessMaterial(
-            baseColorFactor=[0.5, 0.5, 0.5, 1.0],
-            metallicFactor=0.1,
-            roughnessFactor=0.7
-        )
-        intensity = 5
-        mesh_node = pyrender.Mesh.from_trimesh(render_mesh, material=grey_material)
+        scene = pyrender.Scene.from_trimesh_scene(render_mesh)
     else:
-        mesh_node = pyrender.Mesh.from_trimesh(render_mesh)
-    scene.add(mesh_node)
+
+        render_mesh = trimesh.util.concatenate(render_mesh.dump())
+    
+        render_mesh.unmerge_vertices()
+
+        # Normalize mesh to fit bounding box [-1, 1]
+        bbox_min = render_mesh.bounds[0]
+        bbox_max = render_mesh.bounds[1]
+        center = (bbox_min + bbox_max) / 2
+        scale = 2.0 / np.max(bbox_max - bbox_min)  # scale to fit in [-1, 1]
+        
+        render_mesh.apply_translation(-center)
+        render_mesh.apply_scale(scale)
+
+
+        if is_instantmesh:
+            # Flip the mesh, to better represent the original image
+            render_mesh.apply_transform([
+                [-1, 0, 0, 0],
+                [ 0, 1, 0, 0],
+                [ 0, 0, 1, 0],
+                [ 0, 0, 0, 1]
+            ])
+            render_mesh.apply_transform(trimesh.transformations.rotation_matrix(
+                angle= np.pi,
+                direction=[0, 1, 0]
+            ))
+            render_mesh.apply_transform(trimesh.transformations.rotation_matrix(
+                angle= np.pi / 10,
+                direction=[1, 0, 0]
+            ))
+        
+        else:
+            # Slightly rotate the mesh for better visualization
+            render_mesh.apply_transform(trimesh.transformations.rotation_matrix(
+                angle= -np.pi / 6,
+                direction=[0, 1, 0]
+            ))
+            render_mesh.apply_transform(trimesh.transformations.rotation_matrix(
+                angle= np.pi / 10,
+                direction=[1, 0, 0]
+            ))
+        
+        # Create a scene
+        scene = pyrender.Scene()
+
+        
+        
+        if not hasattr(render_mesh.visual, 'material'):
+            # Create a grey material if no texture exists
+            grey_material = pyrender.MetallicRoughnessMaterial(
+                baseColorFactor=[0.5, 0.5, 0.5, 1.0],
+                metallicFactor=0.1,
+                roughnessFactor=0.7,
+            )
+            
+            mesh_node = pyrender.Mesh.from_trimesh(render_mesh, material=grey_material)
+        else:
+            mesh_node = pyrender.Mesh.from_trimesh(render_mesh)
+            intensity = 20
+        scene.add(mesh_node)
+
     
     # Set up the camera
     camera = pyrender.PerspectiveCamera(yfov=np.pi / 3.0)
@@ -164,6 +217,7 @@ def render_mesh(mesh, resolution=512, output_path=None, is_instantmesh=False):
         mask_img.save(output_path.replace('.png', '_mask.png'))
     
     return color
+
 
 def normalize_mesh(mesh):
     """
@@ -229,28 +283,111 @@ def project_texture(mesh, image_path, mask_path, output_path):
     
     mesh.export(output_path)
 
-def transfer_visuals(source_mesh, target_mesh):
+
+def normalize_scene_to_unit_cube(scene):
+    # Get the axis-aligned bounding box of the whole scene
+    bounds = scene.bounds
+    min_corner, max_corner = bounds
+
+    # Compute translation and scale
+    extent = max_corner - min_corner
+    scale_factors = 1.0 / extent
+
+    for geom in scene.geometry.values():
+        # Move min corner to origin
+        geom.apply_translation(-min_corner)
+        # Scale to unit cube (non-uniform if needed)
+        geom.apply_scale(scale_factors)
+
+def normalize_mesh_to_unit_cube(mesh):
+    v = mesh.vertices
+    bmin, bmax = v.min(0), v.max(0)
+    scale = np.where(bmax - bmin == 0, 1, bmax - bmin)
+    v_norm = (v - bmin) / scale
+    return trimesh.Trimesh(vertices=v_norm, faces=mesh.faces, process=False)
+
+
+def resize_to_reference(scene_to_resize, reference_scene):
     """
-    Transfer the visuals from the source mesh to the target mesh.
+    Scales and translates `scene_to_resize` so its bounding box matches that of `reference_scene`.
+    """
+    # Compute bounding boxes
+    ref_min, ref_max = reference_scene.bounds
+    tgt_min, tgt_max = scene_to_resize.bounds
+
+    ref_size = ref_max - ref_min
+    tgt_size = tgt_max - tgt_min
+
+    # Compute scale factors
+    with np.errstate(divide='ignore', invalid='ignore'):
+        scale = np.where(tgt_size != 0, ref_size / tgt_size, 1.0)
+
+    # Use uniform scale (minimum to fit inside ref box)
+    uniform_scale = scale.min()
+
+    # Apply transformations
+    for geom in scene_to_resize.geometry.values():
+        # Move target min corner to origin
+        geom.apply_translation(-tgt_min)
+        # Uniform scale to match reference size
+        geom.apply_scale(uniform_scale)
+        # Translate to reference min corner
+        geom.apply_translation(ref_min)
+    
+
+def split_by_reference(reference_mesh,target_mesh):
+    """
+    Split the mesh into two parts based on the reference mesh.
     
     Args:
-        source_mesh (trimesh.Trimesh): The source mesh.
-        target_mesh (trimesh.Trimesh): The target mesh.
-    Returns:
-        trimesh.Trimesh: The target mesh with transferred visuals.
+        reference_mesh (trimesh.Trimesh): The reference mesh with parts.
+        target_mesh (trimesh.Trimesh): The target mesh to be split.
     """
-    
+    from scipy.spatial import KDTree
 
-    vmapping, indices, uvs = xatlas.parametrize(target_mesh.vertices, target_mesh.faces)
+    reference_mesh_norm = reference_mesh.copy()
 
-    xatlas.export("tmp.obj", target_mesh.vertices[vmapping], indices, uvs)
+    normalize_scene_to_unit_cube(reference_mesh_norm)
+    target_mesh_norm = normalize_mesh_to_unit_cube(target_mesh)
 
-    target_mesh = trimesh.load("tmp.obj", force="mesh")
+    target_vertices = target_mesh_norm.vertices
 
-    os.remove("tmp.obj")
+    tree = KDTree(target_mesh_norm.vertices)
 
-    target_mesh.visual = source_mesh.visual.copy()
+    threshold = 0.0001
 
-    source_mesh.export("test/test1.obj")
+    part_to_vertices = {}
 
-    return target_mesh
+    for part_name, part_geometry in reference_mesh_norm.geometry.items():
+        part_vertices = part_geometry.vertices
+        matched_vertex_indices = set()  # Avoid duplicates
+        
+        # Find all target vertices close to this part's vertices
+        for vertex in part_vertices:
+            nearby_indices = tree.query_ball_point(vertex, r=threshold)
+
+            matched_vertex_indices.update(nearby_indices)
+        
+        part_to_vertices[part_name] = list(matched_vertex_indices)
+
+    # Now, assign faces to new parts based on vertex membership
+    new_parts = {}  # { part_name → trimesh.Trimesh }
+
+    for part_name, vertex_indices in part_to_vertices.items():
+        # Get faces where ALL vertices are in `vertex_indices`
+        mask = np.all(np.isin(target_mesh_norm.faces, vertex_indices), axis=1)
+
+        face_indices = np.where(mask)[0]
+        
+        # Extract the submesh
+        submesh = target_mesh.submesh([face_indices], append=True)
+
+        new_parts[part_name] = submesh
+
+    split_mesh = trimesh.Scene(new_parts)
+
+    resize_to_reference(split_mesh,reference_mesh)
+
+    return split_mesh
+
+

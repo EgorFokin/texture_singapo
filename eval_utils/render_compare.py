@@ -61,7 +61,7 @@ def compare_to_ground_truth(syn_mesh, gt_mesh, out_dir, args):
         gt_mask = os.path.join(out_dir, "ground_truth", f"gt_{i}_mask.png")
 
         gt_mesh.apply_transform(trimesh.transformations.rotation_matrix(rot, [0, 1, 0]))
-        render_mesh(gt_mesh, resolution=512, output_path=gt_img)
+        render_mesh(gt_mesh, resolution=512, output_path=gt_img,as_scene=True)
 
         gt_img_tensor = tf(Image.open(gt_img).convert("RGB"))
         gt_mask_tensor = tf_mask(Image.open(gt_mask).convert("L"))
@@ -71,7 +71,6 @@ def compare_to_ground_truth(syn_mesh, gt_mesh, out_dir, args):
         syn_img = os.path.join(out_dir, f"syn_{i}.png")
         syn_mask = os.path.join(out_dir, f"syn_{i}_mask.png")
 
-        print(syn_img)
 
         syn_mesh.apply_transform(trimesh.transformations.rotation_matrix(rot, [0, 1, 0]))
         render_mesh(syn_mesh, resolution=512, output_path=syn_img, is_instantmesh=bool(args.from_meshes))

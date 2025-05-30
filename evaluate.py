@@ -5,9 +5,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "singapo"))
 from generate import generate
 from eval_data import EvaluationData
 from utils.misc import load_config
-from eval_utils.utils import normalize_mesh,render_mesh, project_texture,transfer_visuals
+from eval_utils.utils import normalize_mesh,render_mesh, project_texture,split_by_reference
 from eval_utils.render_compare import compare_to_ground_truth
-from eval_utils.articulate import get_articulated
+from eval_utils.articulate import articulate
 
 import argparse
 from tqdm import tqdm
@@ -56,6 +56,7 @@ def synthesize_objects(data, args):
 
         if args.use_cached and os.path.exists(os.path.join(out_dir, "object.obj")):
             item.set_singapo_obj_path(os.path.join(out_dir, "object.obj"))
+            item.set_singapo_dict(os.path.join(out_dir, "object.json"))
             continue
 
         s_args = Args(
@@ -78,9 +79,10 @@ def synthesize_objects(data, args):
 
                 scene.add_geometry(mesh,node_name=file.split('.')[0])
         
-        print(os.path.join(out_dir, "object.obj"))
         scene.export(os.path.join(out_dir, "object.obj"), file_type='obj', include_texture=False)
         item.set_singapo_obj_path(os.path.join(out_dir, "object.obj"))
+
+        item.set_singapo_dict(os.path.join(out_dir, "object.json"))
 
 
 def texture_objects(data, args):
@@ -159,35 +161,32 @@ def evaluate(data, args):
     print("Evaluating...")
 
     for item in tqdm(data.get_data_items()):
-        gt_mesh = trimesh.load(item.obj_path)
+        gt_mesh = trimesh.load(item.scene_path,group_material=False)
+        singapo_mesh = trimesh.load(item.singapo_obj_path,group_material=False)
+        no_texture_mesh = singapo_mesh.copy()
         easitex_mesh = trimesh.load(item.easitex_obj_path)
-        base_mesh = trimesh.load(item.singapo_obj_path)
+        easitex_mesh = split_by_reference(singapo_mesh,easitex_mesh)
 
-        if args.articulated:
-            base_mesh = get_articulated(os.path.dirname(item.singapo_obj_path))
-            
-            gt_articulated = get_articulated(item.path)
-            gt_mesh = transfer_visuals(gt_mesh,gt_articulated)
-            gt_mesh = gt_articulated
+        if args.articulated:     
+            articulate(gt_mesh, item.gt_dict)
+            articulate(easitex_mesh, item.singapo_dict) 
+            articulate(no_texture_mesh, item.singapo_dict)  
 
+        test = trimesh.util.concatenate(gt_mesh.dump()).export("test/test.obj")
+
+        easitex_mesh.export("test/easitex.glb")    
+        singapo_mesh.export("test/singapo.glb")
         
-        #texture from easi-tex
-        base_mesh = transfer_visuals(easitex_mesh,base_mesh)
 
-        base_mesh.export("test/test.obj")
-
-        
-        sim = compare_to_ground_truth(base_mesh, gt_mesh, item.output_path, args)
+        sim = compare_to_ground_truth(easitex_mesh, gt_mesh, item.output_path, args)
         item.set_cosine_similarity(sim)
 
         if args.add_no_texture:
             out_no_tex = os.path.join(item.output_path, "no_easitex")
             os.makedirs(out_no_tex, exist_ok=True)
 
-            #no texture
-            base_mesh.visuals = trimesh.visual.ColorVisuals(mesh=base_mesh)
 
-            sim = compare_to_ground_truth(base_mesh, gt_mesh, out_no_tex, args)
+            sim = compare_to_ground_truth(no_texture_mesh, gt_mesh, out_no_tex, args)
             item.set_cosine_similarity_no_easitex(sim)
 
         if args.add_naive_texturing:
@@ -195,12 +194,13 @@ def evaluate(data, args):
             os.makedirs(out_naive, exist_ok=True)
 
             #naive texturing
+            singapo_mesh = trimesh.load(item.singapo_obj_path,group_material=False)
             naive_tex_mesh = trimesh.load(item.naive_texturing_path)
-            base_mesh = transfer_visuals(naive_tex_mesh,base_mesh)
+            naive_tex_mesh = split_by_reference(singapo_mesh, naive_tex_mesh)
+            
 
-            sim = compare_to_ground_truth(base_mesh, gt_mesh, out_naive, args)
+            sim = compare_to_ground_truth(naive_tex_mesh, gt_mesh, out_naive, args)
             item.set_naive_cosine_similarity(sim)
-        exit()
         
 
 
@@ -275,7 +275,8 @@ def texture_naive(data, args):
             continue
 
         # Load the mesh
-        mesh = trimesh.load(item.singapo_obj_path)
+        mesh = trimesh.load(item.singapo_obj_path,group_material=False)
+        mesh = trimesh.util.concatenate(mesh.dump())
         project_texture(mesh, item.img_path, item.mask_path, item.naive_texturing_path)
 
 

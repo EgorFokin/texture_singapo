@@ -17,6 +17,7 @@ class DataItem:
         self.cosine_similarity = None
         self.cosine_similarity_no_easitex = None
         self.naive_cosine_similarity = None
+        self.singapo_dict = None
         self.naive_texturing_path = os.path.join(self.output_path,"naive_texturing","object.obj")
         os.makedirs(os.path.join(self.output_path,"naive_texturing"), exist_ok=True)
 
@@ -40,7 +41,9 @@ class DataItem:
             print(f"Invalid data item: {path}")
             return
 
-        self.obj_path = self._construct_full_obj()
+        self.scene_path = self._construct_full_obj()
+        self.gt_dict = os.path.join(path,"object.json")
+        
 
         if use_cached and os.path.exists(os.path.join(self.output_path,"description.txt")):
             with open(os.path.join(self.output_path,"description.txt"), "r") as f:
@@ -61,36 +64,27 @@ class DataItem:
         Returns:
             str: Path to the constructed full object mesh.
         """
+        scene_path = os.path.abspath(os.path.join(self.output_path, "full_obj", f"{self.id}.glb"))
 
-        obj_path = os.path.abspath(os.path.join(self.output_path,"full_obj",f"{self.id}.obj"))
-        if self.use_cached and os.path.exists(obj_path):
-            return obj_path
+        if self.use_cached and os.path.exists(scene_path):
+            scene_path
 
-        os.makedirs(os.path.join(self.output_path,"full_obj"), exist_ok=True)
-        
-        parts = []
+        os.makedirs(os.path.join(self.output_path, "full_obj"), exist_ok=True)
 
+        scene = trimesh.Scene()
         for part in os.listdir(self.parts_path):
-            if part.endswith(".mtl"):
-                continue
-            part_path = os.path.join(self.parts_path,part)
-            if os.path.exists(part_path):
-                mesh = trimesh.load(part_path, force='mesh')  # force loading as Trimesh
+            part_path = os.path.join(self.parts_path, part)
+            if part.endswith('.obj'):
+                mesh = trimesh.load(part_path, force='mesh')
                 if not isinstance(mesh, trimesh.Trimesh):
-                    self.valid = False
                     print(f"{part_path} did not load as a Trimesh object")
-                    return None
-                parts.append(mesh)
-        
-        if len(parts) == 0:
-            self.valid = False
-            print(f"No valid parts found in {self.parts_path}")
-            return None
-        
-        combined_mesh = trimesh.util.concatenate(parts)
-        combined_mesh.export(obj_path, file_type='obj', include_texture=True)
-            
-        return obj_path
+                    continue
+                scene.add_geometry(mesh,geom_name=part)
+
+        scene.export(scene_path)
+
+        return scene_path
+
     
     def set_singapo_obj_path(self, path):
         """
@@ -136,6 +130,15 @@ class DataItem:
             similarity (float): Cosine similarity value.
         """
         self.naive_cosine_similarity = similarity
+
+    def set_singapo_dict(self, path):
+        """
+        Set the path to the Singapo generated object dictionary.
+
+        Args:
+            path (str): Path to the Singapo generated object dictionary.
+        """
+        self.singapo_dict = path
     
 
 

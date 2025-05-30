@@ -24,7 +24,7 @@ sys.path.append(".")
 
 def init_renderer(camera, shader, image_size, faces_per_pixel):
     raster_settings = RasterizationSettings(image_size=image_size, faces_per_pixel=faces_per_pixel,
-                                            max_faces_per_bin=30000)  # bin_size=80, 
+                                            max_faces_per_bin=100000)  # bin_size=80, 
     renderer = MeshRendererWithFragments(
         rasterizer=MeshRasterizer(
             cameras=camera,

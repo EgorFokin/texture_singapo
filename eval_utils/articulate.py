@@ -104,41 +104,30 @@ def transform_all_parts(part_vertices, obj_dict, joint_state,
         
     return part_transformations
 
-def get_articulated(parts,object_dict_path):
+def articulate(scene,object_dict_path, joint_state=0.5):
     """
     Get the articulated object from the Singapo generated object.
     
     Args:
         trimesh.Trimesh: The parts of the object as a list of trimesh objects.
         object_dict_path (str): Path to the object dictionary JSON file.
-    
-    Returns:
-        trimesh.Trimesh: The articulated object.
+        joint_state (float): The joint state in the range of [0, 1]. Default is 0.5.
     """
-    
-    parts_v = []
-    parts_f = []
-    
 
-    for name, part in parts.geometry.items():
-        parts_v.append(np.array(part.vertices))
-        parts_f.append(part.faces)
-    
+    sorted_parts = sorted(scene.geometry.items(), key=lambda x: int(re.findall(r'_(\d+)\.', x[0])[-1]))
+
+    name_list = [name for name, _ in sorted_parts]
+    verts_list = [np.array(part.vertices) for _, part in sorted_parts]
     
     with open(object_dict_path, "r") as f:
         obj_dict = json.load(f)
 
-    transform_all_parts(parts_v, obj_dict,0.5,dry_run=False)
+    transform_all_parts(verts_list, obj_dict,joint_state,dry_run=False)
 
-    #convert back to trimesh
-    parts = [
-        trimesh.Trimesh(vertices=v, faces=f)
-        for v, f in zip(parts_v, parts_f)
-    ]
+    for name, verts in zip(name_list,verts_list):
+        scene.geometry[name].vertices = verts
 
-    combined = trimesh.util.concatenate(parts)
 
-    return combined
 
 
 
