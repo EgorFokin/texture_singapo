@@ -76,18 +76,24 @@ def make_double_sided(mesh):
     
     # Combine faces: original + flipped (with offset)
     faces = np.vstack((mesh.faces, flipped_faces + len(mesh.vertices)))
+
+    normals = np.vstack((mesh.vertex_normals, -mesh.vertex_normals))
     
     if not hasattr(mesh.visual,"material"):
-        return trimesh.Trimesh(vertices=vertices, faces=faces)
+        return trimesh.Trimesh(vertices=vertices, faces=faces,vertex_normals=normals, process=False)
 
     uv = np.vstack((mesh.visual.uv, mesh.visual.uv))
     
     # Build visual with preserved texture image and UVs
     visual = mesh.visual.copy()
     visual.uv = uv
-    
-    # Return new double-sided mesh
-    return trimesh.Trimesh(vertices=vertices, faces=faces, visual=visual)
+
+    new_mesh = trimesh.Trimesh(vertices=vertices, faces=faces, visual=visual,vertex_normals=normals, process=False)
+
+
+
+    return new_mesh
+
         
 
 def render_mesh(mesh, resolution=512, output_path=None, is_instantmesh=False, as_scene=False):
@@ -108,6 +114,8 @@ def render_mesh(mesh, resolution=512, output_path=None, is_instantmesh=False, as
     intensity = 5
 
     if as_scene:
+
+        intensity = 2
         
         # Normalize mesh to fit bounding box [-1, 1]
         bbox_min = render_mesh.bounds[0]
@@ -127,12 +135,43 @@ def render_mesh(mesh, resolution=512, output_path=None, is_instantmesh=False, as
             angle= np.pi / 10,
             direction=[1, 0, 0]
         ))
-        scene = pyrender.Scene.from_trimesh_scene(render_mesh)
+
+        scene = pyrender.Scene()
+
+        for name, geom in render_mesh.geometry.items():
+            # Disable backface culling using material properties
+            if not hasattr(geom.visual, 'material'):
+                # Create a grey material if no texture exists
+                material = pyrender.MetallicRoughnessMaterial(
+                    baseColorFactor=[0.5, 0.5, 0.5, 1.0],
+                    metallicFactor=0.1,
+                    roughnessFactor=0.7,
+                    doubleSided=True
+                )
+            else:
+                material = pyrender.MetallicRoughnessMaterial(
+                    baseColorTexture=geom.visual.material.baseColorTexture,
+                    metallicFactor=0.1,
+                    roughnessFactor=0.7,
+                    doubleSided=True
+                )
+            
+            # Wrap the trimesh geometry in a pyrender.Mesh
+            mesh = pyrender.Mesh.from_trimesh(geom, material=material, smooth=False)
+
+            transform = render_mesh.graph[name][0]
+
+            scene.add(mesh, pose=transform)
+
+        #scene = pyrender.Scene.from_trimesh_scene(render_mesh)
     else:
 
         render_mesh = trimesh.util.concatenate(render_mesh.dump())
     
-        render_mesh.unmerge_vertices()
+        # render_mesh.unmerge_vertices()
+
+        #render_mesh = make_double_sided(render_mesh)
+
 
         # Normalize mesh to fit bounding box [-1, 1]
         bbox_min = render_mesh.bounds[0]
@@ -179,16 +218,20 @@ def render_mesh(mesh, resolution=512, output_path=None, is_instantmesh=False, as
         
         if not hasattr(render_mesh.visual, 'material'):
             # Create a grey material if no texture exists
-            grey_material = pyrender.MetallicRoughnessMaterial(
+            material = pyrender.MetallicRoughnessMaterial(
                 baseColorFactor=[0.5, 0.5, 0.5, 1.0],
                 metallicFactor=0.1,
-                roughnessFactor=0.7,
+                roughnessFactor=0.7
             )
-            
-            mesh_node = pyrender.Mesh.from_trimesh(render_mesh, material=grey_material)
         else:
-            mesh_node = pyrender.Mesh.from_trimesh(render_mesh)
-            intensity = 20
+            material = pyrender.MetallicRoughnessMaterial(
+                baseColorTexture=render_mesh.visual.material.image,
+                baseColorFactor=render_mesh.visual.material.main_color,
+                metallicFactor=0.1,
+                roughnessFactor=0.7
+            )
+            #intensity = 20
+        mesh_node = pyrender.Mesh.from_trimesh(render_mesh,material=material)
         scene.add(mesh_node)
 
     

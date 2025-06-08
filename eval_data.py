@@ -67,7 +67,7 @@ class DataItem:
         scene_path = os.path.abspath(os.path.join(self.output_path, "full_obj", f"{self.id}.glb"))
 
         if self.use_cached and os.path.exists(scene_path):
-            scene_path
+            return scene_path
 
         os.makedirs(os.path.join(self.output_path, "full_obj"), exist_ok=True)
 
@@ -79,7 +79,7 @@ class DataItem:
                 if not isinstance(mesh, trimesh.Trimesh):
                     print(f"{part_path} did not load as a Trimesh object")
                     continue
-                scene.add_geometry(mesh,geom_name=part)
+                scene.add_geometry(mesh,geom_name=part.replace('.obj','.ply'))
 
         scene.export(scene_path)
 

@@ -33,4 +33,9 @@ wget https://aspis.cmpt.sfu.ca/projects/singapo/data/pm.zip -O tmp/pm.zip
 export UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE
 unzip tmp/pm.zip -d data
 
+wget https://aspis.cmpt.sfu.ca/projects/singapo/ckpts/singapo_ckpt.zip -O tmp/singapo_ckpt.zip
+mkdir singapo/exps
+mkdir singapo/exps/singapo
+unzip tmp/singapo_ckpt.zip -d exps/singapo
+
 rm -rf tmp

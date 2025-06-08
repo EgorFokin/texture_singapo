@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "singapo"))
 from generate import generate
 from eval_data import EvaluationData
 from utils.misc import load_config
-from eval_utils.utils import normalize_mesh,render_mesh, project_texture,split_by_reference
+from eval_utils.utils import normalize_mesh,render_mesh, project_texture,split_by_reference, make_double_sided
 from eval_utils.render_compare import compare_to_ground_truth
 from eval_utils.articulate import articulate
 
@@ -22,7 +22,7 @@ class Args:
         self,
         img='demo/demo_input.png',
         ckpt='exps/singapo/final/ckpts/last.ckpt',
-        config='exps/singapo/final/config/parsed.yaml',
+        config='config/parsed.yaml',
         use_example=False,
         out='demo/demo_output',
         gt_root='../data',
@@ -76,6 +76,7 @@ def synthesize_objects(data, args):
                 mesh = trimesh.load(os.path.join(out_dir,"plys", file), force='mesh')
                 
                 normalize_mesh(mesh)
+                mesh = make_double_sided(mesh)
 
                 scene.add_geometry(mesh,node_name=file.split('.')[0])
         
@@ -142,6 +143,9 @@ def texture_objects(data, args):
         )
         item.set_easitex_obj_path(tex_path)
 
+        if item.output_path == "/home/edfokin/Projects/TextureSingapo/texture_singapo/output/128b5f2d072869004b7a218ab674f93f73a66670":
+            print(get_cmd(item))
+
         if args.use_cached and os.path.exists(tex_path):
             continue
 
@@ -172,11 +176,6 @@ def evaluate(data, args):
             articulate(easitex_mesh, item.singapo_dict) 
             articulate(no_texture_mesh, item.singapo_dict)  
 
-        test = trimesh.util.concatenate(gt_mesh.dump()).export("test/test.obj")
-
-        easitex_mesh.export("test/easitex.glb")    
-        singapo_mesh.export("test/singapo.glb")
-        
 
         sim = compare_to_ground_truth(easitex_mesh, gt_mesh, item.output_path, args)
         item.set_cosine_similarity(sim)

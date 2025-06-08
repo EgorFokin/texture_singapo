@@ -61,8 +61,8 @@ def init_mesh(input_path, cache_path, device):
 
     # make sure mesh size is normalized
     box_max = torch.max(torch.max(mesh.verts_packed(), dim=0)[0] - torch.min(mesh.verts_packed(), dim=0)[0]).item()
-    mesh = apply_scale_to_mesh(mesh, 1 / box_max)
-    edge_mesh = apply_scale_to_mesh(edge_mesh, 1 / box_max)
+    mesh = apply_scale_to_mesh(mesh, 1 / box_max / 1.5)
+    edge_mesh = apply_scale_to_mesh(edge_mesh, 1 / box_max / 1.5)
 
     return mesh, mesh.verts_packed(), faces, aux, principle_directions, mesh_center, box_max, edge_mesh
 

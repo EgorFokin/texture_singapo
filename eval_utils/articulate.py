@@ -101,6 +101,7 @@ def transform_all_parts(part_vertices, obj_dict, joint_state,
             for idx in [i] + children_idxs:
                 
                 part_transformations[idx].append(record)
+
         
     return part_transformations
 
@@ -114,15 +115,41 @@ def articulate(scene,object_dict_path, joint_state=0.5):
         joint_state (float): The joint state in the range of [0, 1]. Default is 0.5.
     """
 
-    sorted_parts = sorted(scene.geometry.items(), key=lambda x: int(re.findall(r'_(\d+)\.', x[0])[-1]))
-
-    name_list = [name for name, _ in sorted_parts]
-    verts_list = [np.array(part.vertices) for _, part in sorted_parts]
-    
     with open(object_dict_path, "r") as f:
         obj_dict = json.load(f)
 
+
+    additional_parts = []
+    part_id = len(obj_dict['diffuse_tree'])
+    for part in obj_dict['diffuse_tree']:
+        if len(part['plys']) > 1:
+            for i in range(1,len(part['plys'])):
+                new_part = part.copy()
+                new_part['plys'] = [part['plys'][i]]
+                new_part['children'] = []
+                new_part['id'] = part_id
+                part_id += 1
+                additional_parts.append(new_part)
+            part['plys'] = [part['plys'][0]]
+    obj_dict['diffuse_tree'] += additional_parts
+
+    parts = scene.geometry
+
+    sorted_parts = [None]*len(obj_dict['diffuse_tree'])
+
+    
+
+    for part in obj_dict['diffuse_tree']:
+        part_name = part['plys'][0].split('/')[-1]
+        sorted_parts[part['id']] = (part_name,parts[part_name])
+        
+    name_list = [name for name, _ in sorted_parts]
+    verts_list = [np.array(part.vertices) for _, part in sorted_parts]
+    
+   
+
     transform_all_parts(verts_list, obj_dict,joint_state,dry_run=False)
+
 
     for name, verts in zip(name_list,verts_list):
         scene.geometry[name].vertices = verts
