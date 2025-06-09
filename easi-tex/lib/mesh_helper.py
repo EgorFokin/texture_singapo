@@ -37,6 +37,10 @@ def init_mesh(input_path, cache_path, device):
     except AttributeError:
         print("multiple materials in {} are not supported".format(input_path))
         exit()
+    
+    vertices -= vertices.mean(axis=0)
+    scale = np.linalg.norm(vertices, axis=1).max()
+    vertices /= scale
 
     vmapping, indices, uvs = xatlas.parametrize(vertices, faces)
     xatlas.export(str(cache_path), vertices[vmapping], indices, uvs)

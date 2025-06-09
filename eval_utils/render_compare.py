@@ -6,7 +6,7 @@ from PIL import Image
 import numpy as np
 import os
 
-from eval_utils.utils import normalize_mesh,render_mesh, project_texture
+from eval_utils.render_utils import render_mesh
 
 dinov2_vitb14_reg = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14_reg', pretrained=True).cuda()
 

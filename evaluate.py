@@ -5,7 +5,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "singapo"))
 from generate import generate
 from eval_data import EvaluationData
 from utils.misc import load_config
-from eval_utils.utils import normalize_mesh,render_mesh, project_texture,split_by_reference, make_double_sided
+from eval_utils.utils import normalize_mesh,split_by_reference, make_double_sided
+from eval_utils.render_utils import project_texture
 from eval_utils.render_compare import compare_to_ground_truth
 from eval_utils.articulate import articulate
 
@@ -76,8 +77,7 @@ def synthesize_objects(data, args):
                 mesh = trimesh.load(os.path.join(out_dir,"plys", file), force='mesh')
                 
                 normalize_mesh(mesh)
-                mesh = make_double_sided(mesh)
-
+        
                 scene.add_geometry(mesh,node_name=file.split('.')[0])
         
         scene.export(os.path.join(out_dir, "object.obj"), file_type='obj', include_texture=False)
@@ -132,7 +132,7 @@ def texture_objects(data, args):
             f'--update_mode heuristic '
             f'--seed 42 '
             f'--post_process '
-            f'--tex_resolution "1k" '
+            f'--tex_resolution "3k" '
             f'--use_objaverse'
         )
 
@@ -170,6 +170,9 @@ def evaluate(data, args):
         no_texture_mesh = singapo_mesh.copy()
         easitex_mesh = trimesh.load(item.easitex_obj_path)
         easitex_mesh = split_by_reference(singapo_mesh,easitex_mesh)
+
+        easitex_mesh = make_double_sided(easitex_mesh)
+        gt_mesh = make_double_sided(gt_mesh)
 
         if args.articulated:     
             articulate(gt_mesh, item.gt_dict)
