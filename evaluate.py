@@ -132,7 +132,7 @@ def texture_objects(data, args):
             f'--update_mode heuristic '
             f'--seed 42 '
             f'--post_process '
-            f'--tex_resolution "3k" '
+            f'--tex_resolution "1k" '
             f'--use_objaverse'
         )
 
@@ -143,8 +143,6 @@ def texture_objects(data, args):
         )
         item.set_easitex_obj_path(tex_path)
 
-        if item.output_path == "/home/edfokin/Projects/TextureSingapo/texture_singapo/output/128b5f2d072869004b7a218ab674f93f73a66670":
-            print(get_cmd(item))
 
         if args.use_cached and os.path.exists(tex_path):
             continue
@@ -171,8 +169,7 @@ def evaluate(data, args):
         easitex_mesh = trimesh.load(item.easitex_obj_path)
         easitex_mesh = split_by_reference(singapo_mesh,easitex_mesh)
 
-        easitex_mesh = make_double_sided(easitex_mesh)
-        gt_mesh = make_double_sided(gt_mesh)
+        
 
         if args.articulated:     
             articulate(gt_mesh, item.gt_dict)

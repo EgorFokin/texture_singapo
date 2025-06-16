@@ -79,7 +79,7 @@ def render_mesh(mesh, resolution=512, output_path=None, is_instantmesh=False, as
     
         # render_mesh.unmerge_vertices()
 
-        #render_mesh = make_double_sided(render_mesh)
+        render_mesh = make_double_sided(render_mesh)
 
 
         # Normalize mesh to fit bounding box [-1, 1]
