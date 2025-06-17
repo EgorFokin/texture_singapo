@@ -46,7 +46,7 @@ optim:
             output_folder = os.path.join(item.output_path, "texture")
             item.set_TEXTure_path(os.path.join(output_folder, f"mesh.obj"))
 
-            if self.system_args.use_cached and os.path.exists(item.texture_path) :
+            if self.system_args.use_cached and os.path.exists(item.TEXTure_path) :
                 continue
 
             with tempfile.NamedTemporaryFile(suffix=".yaml", mode='w+') as tmp:
