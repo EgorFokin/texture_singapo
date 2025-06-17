@@ -44,8 +44,8 @@ optim:
 
         for item in tqdm(data.get_data_items()):
 
-            with tempfile.NamedTemporaryFile(suffix=".yaml") as tmp:
-                tmp.write(self.yaml_template.encode('utf-8') % (item.description, item.singapo_obj_path))
+            with tempfile.NamedTemporaryFile(suffix=".yaml", mode='w+') as tmp:
+                tmp.write((self.yaml_template % (item.description, item.singapo_obj_path)).encode('utf-8'))
                 tmp.flush()
 
                 command = self._get_cmd(tmp.name)

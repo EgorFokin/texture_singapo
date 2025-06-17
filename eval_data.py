@@ -19,7 +19,7 @@ class DataItem:
         self.naive_cosine_similarity = None
         self.singapo_dict = None
         self.naive_texturing_path = os.path.join(self.output_path,"naive_texturing","object.obj")
-        os.makedirs(self.naive_texturing_path, exist_ok=True)
+        os.makedirs(os.path.dirname(self.naive_texturing_path), exist_ok=True)
 
         self.TEXTure_path = None
 
