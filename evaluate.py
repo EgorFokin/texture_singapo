@@ -4,11 +4,16 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "singapo"))
 
 from generate import generate
 from eval_data import EvaluationData
-from utils.misc import load_config
 from eval_utils.utils import normalize_mesh,split_by_reference, make_double_sided
 from eval_utils.render_utils import project_texture
 from eval_utils.render_compare import compare_to_ground_truth
 from eval_utils.articulate import articulate
+
+from modules.singapo import SingapoModule
+from modules.easitex import EasiTexModule
+from modules.projection import ProjectionModule
+from modules.module import EvalModule
+from modules.texture import TEXTureModule
 
 import argparse
 from tqdm import tqdm
@@ -17,139 +22,6 @@ import torch
 from PIL import Image
 import numpy as np
 
-
-class Args:
-    def __init__(
-        self,
-        img='demo/demo_input.png',
-        ckpt='exps/singapo/final/ckpts/last.ckpt',
-        config='config/parsed.yaml',
-        use_example=False,
-        out='demo/demo_output',
-        gt_root='../data',
-        n=1,
-        omega=0.5,
-        denoise_steps=100,
-    ):
-        self.img_path = img
-        self.ckpt_path = ckpt
-        self.config_path = config
-        self.use_example_graph = use_example
-        self.save_dir = out
-        self.gt_data_root = gt_root
-        self.n_samples = n
-        self.omega = omega
-        self.n_denoise_steps = denoise_steps
-
-
-def synthesize_objects(data, args):
-    """
-    Synthesize objects using Singapo.
-    Args:
-        data (EvaluationData): The evaluation data object.
-        args (argparse.Namespace): The arguments passed to the script.
-    """
-
-    print("Synthesizing with Singapo...")
-
-    for item in tqdm(data.get_data_items()):
-        out_dir = os.path.join(item.output_path, "singapo", "0")
-
-        if args.use_cached and os.path.exists(os.path.join(out_dir, "object.obj")):
-            item.set_singapo_obj_path(os.path.join(out_dir, "object.obj"))
-            item.set_singapo_dict(os.path.join(out_dir, "object.json"))
-            continue
-
-        s_args = Args(
-            img=item.img_path,
-            ckpt=args.singapo_ckpt_path,
-            config=args.singapo_config_path,
-            gt_root=args.singapo_gt_data_root,
-            out=os.path.join(item.output_path, "singapo"),
-        )
-
-        generate(s_args)
-
-        scene = trimesh.Scene()
-
-        for file in os.listdir(os.path.join(out_dir, "plys")):
-            if file.endswith(".ply"):
-                mesh = trimesh.load(os.path.join(out_dir,"plys", file), force='mesh')
-                
-                normalize_mesh(mesh)
-        
-                scene.add_geometry(mesh,node_name=file.split('.')[0])
-        
-        scene.export(os.path.join(out_dir, "object.obj"), file_type='obj', include_texture=False)
-        item.set_singapo_obj_path(os.path.join(out_dir, "object.obj"))
-
-        item.set_singapo_dict(os.path.join(out_dir, "object.json"))
-
-
-def texture_objects(data, args):
-    """
-    Texture objects using Easi-Tex.
-    Args:
-        data (EvaluationData): The evaluation data object.
-        args (argparse.Namespace): The arguments passed to the script.
-    """
-
-    print("Texturing with Easi-Tex...")
-
-    root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "easi-tex")
-    prev = os.getcwd()
-    os.chdir(root)
-
-    def get_cmd(item):
-        return (
-            f'python scripts/generate_texture.py '
-            f'--input_dir "{os.path.dirname(item.singapo_obj_path)}" '
-            f'--output_dir "{os.path.join(item.output_path, "easitex")}" '
-            f'--obj_file "{os.path.basename(item.singapo_obj_path)}" '
-            f'--prompt "{item.description}" '
-            f'--style_img "{item.img_path}" '
-            f'--style_img_bg_color 255 255 255 '
-            f'--ip_adapter_path "./ip_adapter" '
-            f'--ip_adapter_strength 1.0 '
-            f'--ip_adapter_n_tokens 16 '
-            f'--controlnet_cond "canny" '
-            f'--controlnet_strength 1.0 '
-            f'--use_cc_edges True '
-            f'--use_depth_edges True '
-            f'--use_normal_edges True '
-            f'--add_view_to_prompt '
-            f'--ddim_steps 50 '
-            f'--guidance_scale 10 '
-            f'--new_strength 1 '
-            f'--update_strength 0.4 '
-            f'--view_threshold 0.1 '
-            f'--blend 0 '
-            f'--dist 0.8 '
-            f'--num_viewpoints 36 '
-            f'--viewpoint_mode predefined '
-            f'--use_principle '
-            f'--update_steps 20 '
-            f'--update_mode heuristic '
-            f'--seed 42 '
-            f'--post_process '
-            f'--tex_resolution "1k" '
-            f'--use_objaverse'
-        )
-
-    for item in tqdm(data.get_data_items()):
-        tex_path = os.path.join(
-            item.output_path, "easitex", "canny", f"0-{item.id}",
-            "42-ip1.0-cn1.0-dist0.8-gs10.0-p36-h20-us0.4-vt0.1", "update", "mesh", "19_post.obj"
-        )
-        item.set_easitex_obj_path(tex_path)
-
-
-        if args.use_cached and os.path.exists(tex_path):
-            continue
-
-        os.system(get_cmd(item))
-
-    os.chdir(prev)
 
 
 def evaluate(data, args):
@@ -258,26 +130,6 @@ def evaluate_meshes(data,args):
 
         item.set_cosine_similarity(similarity)
 
-def texture_naive(data, args):
-    """
-    Texture objects using naive projection.
-    Args:
-        data (EvaluationData): The evaluation data object.
-        args (argparse.Namespace): The arguments passed to the script.
-    """
-
-    print("Texturing objects using naive projection...")
-
-    for item in tqdm(data.get_data_items()):
-
-        if args.use_cached and os.path.exists(item.naive_texturing_path):
-            continue
-
-        # Load the mesh
-        mesh = trimesh.load(item.singapo_obj_path,group_material=False)
-        mesh = trimesh.util.concatenate(mesh.dump())
-        project_texture(mesh, item.img_path, item.mask_path, item.naive_texturing_path)
-
 
 
 if __name__ == "__main__":
@@ -293,6 +145,7 @@ if __name__ == "__main__":
     parser.add_argument("--from_meshes", type=str, default=None, help="path to the meshes to be evaluated")
     parser.add_argument("--additional_rotations", action="store_true", help="evaluate the objects with additional rotations")
     parser.add_argument("--articulated", action="store_true", help="evaluate objects with articulation")
+    parser.add_argument("--add_TEXTure", action="store_true", help="additionally evaluate the objects with TEXTure")
 
     args = parser.parse_args()
 
@@ -304,18 +157,27 @@ if __name__ == "__main__":
 
     data = EvaluationData(args.eval_data_path,args.output_path,args.use_cached)
 
-
-    if args.from_meshes is None:
-        synthesize_objects(data,args)
-        texture_objects(data,args)
-        if args.add_naive_texturing:
-            texture_naive(data,args)
-        evaluate(data,args)
-        display_results(data,args)
-    else:
+    if args.from_meshes is not None:
         print("Evaluating meshes from", args.from_meshes)
         evaluate_meshes(data,args)
         display_results(data,args)
+        exit()
+
+    modules = []
+
+    modules.append(SingapoModule(args))
+    modules.append(EasiTexModule(args))
+    if args.add_naive_texturing:
+        modules.append(ProjectionModule(args))
+    if args.add_TEXTure:
+        modules.append(TEXTureModule(args))
+    
+
+    for module in modules:
+        module.generate(data)
+
+    evaluate(data,args)
+    display_results(data,args)
 
 
 

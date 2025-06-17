@@ -19,7 +19,9 @@ class DataItem:
         self.naive_cosine_similarity = None
         self.singapo_dict = None
         self.naive_texturing_path = os.path.join(self.output_path,"naive_texturing","object.obj")
-        os.makedirs(os.path.join(self.output_path,"naive_texturing"), exist_ok=True)
+        os.makedirs(self.naive_texturing_path, exist_ok=True)
+
+        self.TEXTure_path = None
 
         
 
@@ -139,6 +141,15 @@ class DataItem:
             path (str): Path to the Singapo generated object dictionary.
         """
         self.singapo_dict = path
+    
+    def set_TEXTure_path(self, path):
+        """
+        Set the path to the TEXTure generated object.
+
+        Args:
+            path (str): Path to the TEXTure generated object.
+        """
+        self.TEXTure_path = path
     
 
 

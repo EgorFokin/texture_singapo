@@ -2,6 +2,7 @@ FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
+    libgl1 \
     git-lfs \
     graphviz-dev \
     wget \
@@ -18,9 +19,7 @@ RUN curl -sLo ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-late
 ENV PATH=$CONDA_DIR/bin:$PATH
 
 # Clone and set up the project
-RUN git clone https://github.com/EgorFokin/texture_singapo && \
-    cd texture_singapo && \
-    git lfs install && \
+RUN git lfs install && \
     mkdir tmp && \
     wget https://huggingface.co/lllyasviel/ControlNet/resolve/main/models/control_sd15_canny.pth?download=true -O tmp/control_sd15_canny.pth && \
     wget https://huggingface.co/lllyasviel/ControlNet-v1-1/resolve/main/control_v11p_sd15_canny.pth?download=true -O tmp/control_v11p_sd15_canny.pth && \
@@ -43,7 +42,8 @@ COPY requirements.txt /tmp/requirements.txt
 RUN conda env create -f /tmp/environment.yml && \
     conda clean -afy
 
-RUN apt-get update && apt-get install -y libgl1
+RUN git clone https://github.com/EgorFokin/texture_singapo
+
 
 # Set working directory
 WORKDIR /texture_singapo
