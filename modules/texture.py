@@ -43,15 +43,20 @@ optim:
         print("Texturing with TEXTure...")
 
         for item in tqdm(data.get_data_items()):
+            output_folder = os.path.join(item.output_path, "texture")
+            item.set_TEXTure_path(os.path.join(output_folder, f"mesh.obj"))
+
+            if self.system_args.use_cached and os.path.exists(item.texture_path) :
+                continue
 
             with tempfile.NamedTemporaryFile(suffix=".yaml", mode='w+') as tmp:
-                tmp.write((self.yaml_template % (item.description, item.singapo_obj_path)).encode('utf-8'))
+                tmp.write(self.yaml_template % (item.description, item.singapo_obj_path))
                 tmp.flush()
 
                 command = self._get_cmd(tmp.name)
                 os.system(command)
 
-                output_folder = os.path.join(item.output_path, "texture")
+                
 
                 os.makedirs(output_folder, exist_ok=True)
 
@@ -65,7 +70,7 @@ optim:
                     if os.path.isfile(source_path):
                         shutil.move(source_path, destination_path)
 
-                item.set_texture_path(os.path.join(output_folder, f"mesh.obj"))
+                
 
         os.chdir(prev)
 
