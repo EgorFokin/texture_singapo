@@ -2,7 +2,8 @@ trimesh
 scikit-learn
 opencv-python
 matplotlib
-imageio
+imageio==2.19.3
+imageio-ffmpeg==0.4.7
 diffusers==0.26.3
 einops
 transformers==4.43.2
@@ -30,3 +31,6 @@ numpy-quaternion
 pygraphviz
 openai
 python-dotenv
+pyrallis
+kaolin==0.17.0
+-f https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.0.1_cu118.html

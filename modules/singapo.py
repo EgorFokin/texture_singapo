@@ -4,6 +4,8 @@ from tqdm import tqdm
 from generate import generate
 from eval_utils.utils import normalize_mesh
 import trimesh
+from eval_utils.render_compare import compare_to_ground_truth
+from eval_utils.articulate import articulate
 
 class SingapoModule(EvalModule):
     def __init__(self, system_args):
@@ -83,6 +85,32 @@ class SingapoModule(EvalModule):
             data (EvaluationData): The evaluation data object.
         """
         self._synthesize_objects(data)
+
+    def evaluate(self,data):
+        """
+        Evaluate the synthesized objects without texture.
+        Args:
+            data (EvaluationData): The evaluation data object.
+        """
+
+        print("Evaluating synthesized objects without texture...")
+        for item in tqdm(data.get_data_items()):
+
+            out_no_tex = os.path.join(item.output_path, "no_easitex")
+            os.makedirs(out_no_tex, exist_ok=True)
+
+            no_texture_mesh = trimesh.load(item.singapo_obj_path,group_material=False)
+            gt_mesh = trimesh.load(item.scene_path,group_material=False)
+
+            if self.system_args.articulated:
+                articulate(no_texture_mesh, item.singapo_dict)
+                articulate(gt_mesh, item.gt_dict)
+
+
+            sim = compare_to_ground_truth(no_texture_mesh, gt_mesh, out_no_tex, self.system_args)
+            item.set_cosine_similarity_no_easitex(sim)
+
+
 
         
 

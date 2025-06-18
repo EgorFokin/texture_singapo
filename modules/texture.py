@@ -3,6 +3,9 @@ import os
 from tqdm import tqdm
 import tempfile
 import shutil
+from eval_utils.utils import split_by_reference
+from eval_utils.render_compare import compare_to_ground_truth
+from eval_utils.articulate import articulate
 
 class TEXTureModule(EvalModule):
     def __init__(self, system_args):
@@ -69,16 +72,12 @@ optim:
                     # Check if it's a file (skip directories)
                     if os.path.isfile(source_path):
                         shutil.move(source_path, destination_path)
+            
+            shutil.rmtree("cache")
 
                 
 
         os.chdir(prev)
-
-                
-
-
-
-
 
     def generate(self, data):
         """
@@ -87,5 +86,12 @@ optim:
             data (EvaluationData): The evaluation data object.
         """
         self._texture_objects(data)
+
+    def evaluate(self, data):
+        """
+        Evaluate the synthesized objects.
+        Args:
+            data (EvaluationData): The evaluation data object.
+        """
 
         

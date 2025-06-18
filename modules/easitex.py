@@ -1,6 +1,10 @@
 from modules.module import EvalModule
 import os
 from tqdm import tqdm
+from eval_utils.utils import split_by_reference
+from eval_utils.render_compare import compare_to_ground_truth
+from eval_utils.articulate import articulate
+import trimesh
 
 class EasiTexModule(EvalModule):
     def __init__(self, system_args):
@@ -77,5 +81,29 @@ class EasiTexModule(EvalModule):
             data (EvaluationData): The evaluation data object.
         """
         self._texture_objects(data)
+    
+    def evaluate(self, data):
+        """
+        Evaluate the generated textures.
+        Args:
+            data (EvaluationData): The evaluation data object.
+        """
+        print("Evaluating Easi-Tex textures...")
+
+        for item in tqdm(data.get_data_items()):
+
+
+            singapo_mesh = trimesh.load(item.singapo_obj_path,group_material=False)
+            easitex_mesh = trimesh.load(item.easitex_obj_path)
+            easitex_mesh = split_by_reference(singapo_mesh,easitex_mesh)
+            gt_mesh = trimesh.load(item.scene_path,group_material=False)
+
+            if self.system_args.articulated:
+                articulate(easitex_mesh, item.singapo_dict)
+                articulate(gt_mesh, item.gt_dict)
+
+
+            sim = compare_to_ground_truth(easitex_mesh, gt_mesh, item.output_path, self.system_args)
+            item.set_cosine_similarity(sim)
 
         

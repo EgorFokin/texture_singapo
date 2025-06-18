@@ -23,55 +23,6 @@ from PIL import Image
 import numpy as np
 
 
-
-def evaluate(data, args):
-    """
-    Evaluate the synthesized objects.
-    Args:
-        data (EvaluationData): The evaluation data object.
-        args (argparse.Namespace): The arguments passed to the script.
-    """
-
-    print("Evaluating...")
-
-    for item in tqdm(data.get_data_items()):
-        gt_mesh = trimesh.load(item.scene_path,group_material=False)
-        singapo_mesh = trimesh.load(item.singapo_obj_path,group_material=False)
-        no_texture_mesh = singapo_mesh.copy()
-        easitex_mesh = trimesh.load(item.easitex_obj_path)
-        easitex_mesh = split_by_reference(singapo_mesh,easitex_mesh)
-
-        
-
-        if args.articulated:     
-            articulate(gt_mesh, item.gt_dict)
-            articulate(easitex_mesh, item.singapo_dict) 
-            articulate(no_texture_mesh, item.singapo_dict)  
-
-
-        sim = compare_to_ground_truth(easitex_mesh, gt_mesh, item.output_path, args)
-        item.set_cosine_similarity(sim)
-
-        if args.add_no_texture:
-            out_no_tex = os.path.join(item.output_path, "no_easitex")
-            os.makedirs(out_no_tex, exist_ok=True)
-
-
-            sim = compare_to_ground_truth(no_texture_mesh, gt_mesh, out_no_tex, args)
-            item.set_cosine_similarity_no_easitex(sim)
-
-        if args.add_naive_texturing:
-            out_naive = os.path.join(item.output_path, "naive_texturing")
-            os.makedirs(out_naive, exist_ok=True)
-
-            #naive texturing
-            singapo_mesh = trimesh.load(item.singapo_obj_path,group_material=False)
-            naive_tex_mesh = trimesh.load(item.naive_texturing_path)
-            naive_tex_mesh = split_by_reference(singapo_mesh, naive_tex_mesh)
-            
-
-            sim = compare_to_ground_truth(naive_tex_mesh, gt_mesh, out_naive, args)
-            item.set_naive_cosine_similarity(sim)
         
 
 
@@ -175,8 +126,11 @@ if __name__ == "__main__":
 
     for module in modules:
         module.generate(data)
+    
+    for module in modules:
+        module.evaluate(data)
 
-    evaluate(data,args)
+    
     display_results(data,args)
 
 
